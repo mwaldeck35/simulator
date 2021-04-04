@@ -1,0 +1,39 @@
+library(tidyverse)
+library(lubridate)
+library(glmnet)
+library(leaps)
+library(tree)
+#function definitions
+
+
+
+ma <- function(step, data) {
+  new_data <- data
+  for (i in 1:length(data)){
+    if (i > step){
+      new_data[i] <- mean(data[(i-step):(i-1)])
+    }
+    else {
+      new_data[i] <- NA
+    }
+    
+  }
+  
+  return(new_data)
+}
+
+
+df <- read_csv("AMZNtrain.csv")
+
+df <- df %>% 
+  transmute(Date, Open, Close, prev = ma(1,df$Close),
+            ma.5 = ma(5,Close), ma.10 = ma(10, Close), ma.20 = ma(20, Close), ma.120 = ma(120, Close),
+            ret = (Close-prev)/Close,
+            ret.5 = (Close - ma.5)/ma.5,
+            ret.10 = (Close - ma.10)/ma.10,
+            ret.20 = (Close - ma.20)/ma.20,
+            ret.120 = (Close - ma.120)/ma.120,) %>% na.omit
+
+ggplot(data = df,mapping = aes(Date, ret.120)) + geom_point() + geom_smooth(method = "lm")
+
+

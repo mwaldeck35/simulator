@@ -1,0 +1,115 @@
+---
+title: "Amazon Tests"
+output: html_notebook
+---
+```{r}
+library(tidyverse)
+library(lubridate)
+library(glmnet)
+library(leaps)
+library(tree)
+#function definitions
+
+geom_mean <- function(x){
+  exp(mean(log(x)))
+}
+
+geom_ma <- function(step, data) {
+    new_data <- data
+  for (i in 1:length(data)){
+    if (i > step){
+      new_data[i] <- geom_mean(data[(i-step):(i-1)])
+    }
+    else {
+      new_data[i] <- NA
+    }
+    
+    
+  }
+  
+  return(new_data)
+
+}
+
+ma <- function(step, data) {
+  new_data <- data
+  for (i in 1:length(data)){
+    if (i > step){
+      new_data[i] <- mean(data[(i-step):(i-1)])
+    }
+    else {
+      new_data[i] <- NA
+    }
+    
+  }
+  
+  return(new_data)
+}
+forward_close <- function(step, data){
+  new_data <- data
+  for (i in 1:length(data)){
+    if (i < length(data) - step){
+      new_data[i] <- mean(data[(i+1):(i + 1 + step)])
+    }
+    else {
+      new_data[i] <- NA
+    }
+    
+  }
+  return(new_data)
+}
+```
+```{r}
+
+df <- read_csv("AMZNtrain.csv")
+
+df <- df %>% transmute(Date, Open, Close, prev = ma(1,df$Close), ret = Close/prev,
+                       ma.5 = geom_ma(5,Close/prev),
+                       ma.10 = geom_ma(10, Close/prev),
+                       ma.20 = geom_ma(20, Close/prev),
+                       ma.120 = geom_ma(120, Close/prev),
+                       pos.now = (ret > 1),
+                       pos.5 = (ma.5 > 1),
+                       pos.10 = (ma.10 > 1),
+                       pos.20 = (ma.20 > 1),
+                       pos.120 = (ma.120 > 1),
+                       rate.5 = ma(5,as.numeric(pos.now)),
+                       rate.10 = ma(10,as.numeric(pos.now)),
+                       rate.20 = ma(20,as.numeric(pos.now)),
+                       rate.120 = ma(120,as.numeric(pos.now))) %>% na.omit
+
+
+```
+
+
+```{r}
+
+
+cor(as.integer(df$Date), df$ma.10)
+```
+
+```{r}
+
+ggplot(data = df,mapping = aes(pos.120, ret)) + geom_boxplot() + geom_jitter()
+
+
+cor(as.integer(df$ma.5), as.integer(df$pos.now))
+cor(as.integer(df$ma.10), as.integer(df$pos.now))
+cor(as.integer(df$ma.20), as.integer(df$pos.now))
+cor(as.integer(df$ma.120), as.integer(df$pos.now))
+
+
+cor(as.integer(df$Close), df$ma.10)
+cor(as.integer(df$Close), df$ma.20)
+cor(as.integer(df$Close), df$ma.120)
+cor(as.integer(df$Close), df$ret)
+
+#correlations dont need to be positive here. The return percentage doesnt need to increase over time.
+#all we're trying to figure out is when the return will be positive and negative
+#we are thus looking for an indicator that the return will be positive
+cor(as.integer(df$ret), df$ma.5)
+cor(as.integer(df$ret), df$ma.10)
+cor(as.integer(df$ret), df$ma.20)
+cor(as.integer(df$ret), df$ma.120)
+```
+

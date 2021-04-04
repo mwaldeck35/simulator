@@ -1,0 +1,26 @@
+{
+    "id": "A553BF48",
+    "path": "~/Desktop/amazon/amazon.Rmd",
+    "project_path": "amazon.Rmd",
+    "type": "r_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": true,
+    "created": 1617470294510.0,
+    "source_on_save": false,
+    "relative_order": 6,
+    "properties": {
+        "tempName": "Untitled1",
+        "chunk_output_type": "inline",
+        "cursorPosition": "97,0",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1617498222,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1617498900741,
+    "read_only": false,
+    "read_only_alternatives": []
+}

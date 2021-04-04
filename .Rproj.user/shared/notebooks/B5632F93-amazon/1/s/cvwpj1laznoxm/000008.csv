@@ -1,0 +1,29 @@
+"0",""
+"0","df <- read_csv(""AMZNtrain.csv"")"
+"2","Parsed with column specification:
+cols(
+  Date = [34mcol_date(format = """")[39m,
+  Open = [32mcol_double()[39m,
+  High = [32mcol_double()[39m,
+  Low = [32mcol_double()[39m,
+  Close = [32mcol_double()[39m,
+  `Adj Close` = [32mcol_double()[39m,
+  Volume = [32mcol_double()[39m
+)
+"
+"0","df <- df %>% transmute(Date, Open, Close, prev = ma(1,df$Close), ret = Close/prev,"
+"0","                       ma.5 = geom_ma(5,Close/prev),"
+"0","                       ma.10 = geom_ma(10, Close/prev),"
+"0","                       ma.20 = geom_ma(20, Close/prev),"
+"0","                       ma.120 = geom_ma(120, Close/prev),"
+"0","                       pos.now = (ret > 1),"
+"0","                       pos.5 = (ma.5 > 1),"
+"0","                       pos.10 = (ma.10 > 1),"
+"0","                       pos.20 = (ma.20 > 1),"
+"0","                       pos.120 = (ma.120 > 1),"
+"0","                       rate.5 = ma(5,as.numeric(pos.now)),"
+"0","                       rate.10 = ma(10,as.numeric(pos.now)),"
+"0","                       rate.20 = ma(20,as.numeric(pos.now)),"
+"0","                       rate.120 = ma(120,as.numeric(pos.now))) %>% na.omit"
+"0",""
+"0",""
